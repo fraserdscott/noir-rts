@@ -1,16 +1,17 @@
 use dep::std;
 
 const N: Field = 4;
+const numHashers: Field = 3;
 
 fn merkle_root(leaves: [Field]) -> Field {
-    let totalLeaves = std::array::len(leaves);
+    let totalLeaves : const Field = std::array::len(leaves);
 
     // TODO: hashers should be dynamically sized based on 
     // let numHashers = totalLeaves - 1;
-    let mut hashers : [Field; 3] = [0, 0, 0];
+    let mut hashers : [Field; numHashers] = [0, 0, 0];
 
-    let numLeafHashers = totalLeaves / 2;
-    let numIntermediateHashers = numLeafHashers - 1;
+    let numLeafHashers : const Field = totalLeaves / 2;
+    let numIntermediateHashers : const Field = numLeafHashers - 1;
 
     for i in 0..numLeafHashers {
         hashers[i] = std::hash::pedersen([leaves[i*2], leaves[i*2+1]])[0];
@@ -27,14 +28,13 @@ fn merkle_root(leaves: [Field]) -> Field {
 }
 
 // TODO: add inexact transfers
-// TODO: standardise hash function in Circom and Noir
+// TODO: standardise hash function in Circom vs Noir
 fn process_events(
     froms: [Field],
     tos: [Field],
     values: [Field],
 ) -> [Field ; 2] {
     let mut balances : [Field; N] = [0, 0, 0, 0];
-    let mut eventHash = 0;
 
     for i in 0..N {
         let mut fromBalance = 0;
@@ -50,7 +50,7 @@ fn process_events(
                 // If the event is a deposit OR the sender has sufficient funds
                 if (froms[i] == 0) | (fromBalance == values[i]) {
                     balances[j] = balances[j] - values[i];
-                } 
+                }
             }
             // If you are the recipient of the event
             if tos[i] == tos[j] {
@@ -60,13 +60,13 @@ fn process_events(
                 } 
             }
         };
-
-        eventHash = std::hash::pedersen([eventHash, froms[i], tos[i], values[i]])[0];
     };
 
+    let mut eventHash = 0;
     let mut stateHashes : [Field; N] = [0, 0, 0, 0];
 
     for i in 0..N {
+        eventHash = std::hash::pedersen([eventHash, froms[i], tos[i], values[i]])[0];
         stateHashes[i] = std::hash::pedersen([tos[i], balances[i]])[0];
     };
 
