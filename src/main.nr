@@ -30,6 +30,13 @@ fn main(
         };
 
         for j in 0..N {
+            // If you are the sender of the event
+            if froms[i] == tos[j] {
+                // If the event is a deposit OR the sender has sufficient funds
+                if (froms[i] == 0) | (fromBalance == values[i]) {
+                    balances[j] = balances[j] - values[i];
+                } 
+            }
             // If you are the recipient of the event
             if tos[i] == tos[j] {
                 // If the event is a deposit OR the sender has sufficient funds
@@ -40,8 +47,8 @@ fn main(
         }
     };
 
-    constrain balances[0] == 12;
+    constrain balances[0] == 10;
     constrain balances[1] == 2;
-    constrain balances[2] == 12;
+    constrain balances[2] == 10;
     constrain balances[3] == 7;
 }
