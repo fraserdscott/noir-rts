@@ -1,11 +1,17 @@
+use dep::std;
+
 const N: Field = 4;
 
+// TODO: add inexact transfers
+// TODO: standardise hash function in Circom and Noir
+// TODO: replicate balance merkle root
 fn process_events(
     froms: [Field],
     tos: [Field],
     values: [Field],
 ) {
     let mut balances = [0, 0, 0, 0];
+    let mut eventHash = 0;
 
     for i in 0..N {
         let mut fromBalance = 0;
@@ -30,16 +36,17 @@ fn process_events(
                     balances[j] = balances[j] + values[i];
                 } 
             }
-        }
+        };
+
+        eventHash = std::hash::pedersen([eventHash, froms[i], tos[i], values[i]])[0];
     };
 
+    // Hardcoded constraints for testing
     constrain balances[0] == 10;
     constrain balances[1] == 2;
     constrain balances[2] == 10;
     constrain balances[3] == 7;
 }
-
-
 
 fn main(
     from0 : Field, 
