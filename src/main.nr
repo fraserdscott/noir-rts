@@ -1,6 +1,5 @@
 const N: Field = 4;
 
-// TODO: decrement senders funds
 fn main(
     from0 : Field, 
     from1 : Field,
