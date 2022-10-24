@@ -9,7 +9,7 @@ fn process_events(
     froms: [Field],
     tos: [Field],
     values: [Field],
-) {
+) -> Field {
     let mut balances = [0, 0, 0, 0];
     let mut eventHash = 0;
 
@@ -46,6 +46,8 @@ fn process_events(
     constrain balances[1] == 2;
     constrain balances[2] == 10;
     constrain balances[3] == 7;
+
+    eventHash
 }
 
 fn main(
