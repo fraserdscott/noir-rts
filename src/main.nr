@@ -1,23 +1,10 @@
 const N: Field = 4;
 
-fn main(
-    from0 : Field, 
-    from1 : Field,
-    from2 : Field,
-    from3 : Field,
-    to0 : Field, 
-    to1 : Field,
-    to2 : Field,
-    to3 : Field,
-    value0 : Field, 
-    value1 : Field,
-    value2 : Field,
-    value3 : Field,
+fn process_events(
+    froms: [Field],
+    tos: [Field],
+    values: [Field],
 ) {
-    let froms = [from0, from1, from2, from3];
-    let tos = [to0, to1, to2, to3];
-    let values = [value0, value1, value2, value3];
-    
     let mut balances = [0, 0, 0, 0];
 
     for i in 0..N {
@@ -50,4 +37,27 @@ fn main(
     constrain balances[1] == 2;
     constrain balances[2] == 10;
     constrain balances[3] == 7;
+}
+
+
+
+fn main(
+    from0 : Field, 
+    from1 : Field,
+    from2 : Field,
+    from3 : Field,
+    to0 : Field, 
+    to1 : Field,
+    to2 : Field,
+    to3 : Field,
+    value0 : Field, 
+    value1 : Field,
+    value2 : Field,
+    value3 : Field,
+) {
+    let froms = [from0, from1, from2, from3];
+    let tos = [to0, to1, to2, to3];
+    let values = [value0, value1, value2, value3];
+
+    process_events(froms, tos, values);
 }
