@@ -1,5 +1,6 @@
 const N: Field = 4;
 
+// TODO: decrement senders funds
 fn main(
     from0 : Field, 
     from1 : Field,
@@ -21,15 +22,26 @@ fn main(
     let mut balances = [0, 0, 0, 0];
 
     for i in 0..N {
+        let mut fromBalance = 0;
         for j in 0..N {
-            if (froms[i] == 0) & (tos[i] == tos[j]) {
-                balances[j] = balances[j] + values[i];
+            if froms[i] == tos[j] {
+                fromBalance = balances[j];
+            }
+        };
+
+        for j in 0..N {
+            // If you are the recipient of the event
+            if tos[i] == tos[j] {
+                // If the event is a deposit OR the sender has sufficient funds
+                if (froms[i] == 0) | (fromBalance == values[i]) {
+                    balances[j] = balances[j] + values[i];
+                } 
             }
         }
     };
 
-    constrain balances[0] == 4;
+    constrain balances[0] == 12;
     constrain balances[1] == 2;
-    constrain balances[2] == 4;
-    constrain balances[3] == 4;
+    constrain balances[2] == 12;
+    constrain balances[3] == 7;
 }
