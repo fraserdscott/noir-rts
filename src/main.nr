@@ -2,15 +2,38 @@ use dep::std;
 
 const N: Field = 4;
 
+fn merkle_root(leaves: [Field]) -> Field {
+    let totalLeaves = std::array::len(leaves);
+
+    // TODO: hashers should be dynamically sized based on 
+    // let numHashers = totalLeaves - 1;
+    let mut hashers : [Field; 3] = [0, 0, 0];
+
+    let numLeafHashers = totalLeaves / 2;
+    let numIntermediateHashers = numLeafHashers - 1;
+
+    for i in 0..numLeafHashers {
+        hashers[i] = std::hash::pedersen([leaves[i*2], leaves[i*2+1]])[0];
+    };
+
+    let mut k = 0;
+    for i in numLeafHashers..numLeafHashers + numIntermediateHashers {
+        hashers[i] = std::hash::pedersen([hashers[k*2], hashers[k*2+1]])[0];
+
+        k = k + 1;
+    };
+
+    hashers[numLeafHashers - 1]
+}
+
 // TODO: add inexact transfers
 // TODO: standardise hash function in Circom and Noir
-// TODO: replicate balance merkle root
 fn process_events(
     froms: [Field],
     tos: [Field],
     values: [Field],
-) -> Field {
-    let mut balances = [0, 0, 0, 0];
+) -> [Field ; 2] {
+    let mut balances : [Field; N] = [0, 0, 0, 0];
     let mut eventHash = 0;
 
     for i in 0..N {
@@ -41,13 +64,19 @@ fn process_events(
         eventHash = std::hash::pedersen([eventHash, froms[i], tos[i], values[i]])[0];
     };
 
+    let mut stateHashes : [Field; N] = [0, 0, 0, 0];
+
+    for i in 0..N {
+        stateHashes[i] = std::hash::pedersen([tos[i], balances[i]])[0];
+    };
+
     // Hardcoded constraints for testing
     constrain balances[0] == 10;
     constrain balances[1] == 2;
     constrain balances[2] == 10;
     constrain balances[3] == 7;
 
-    eventHash
+    [eventHash, merkle_root(stateHashes)]
 }
 
 fn main(
