@@ -29,7 +29,6 @@ fn merkle_root(leaves: [Field]) -> Field {
 
 // TODO: add inexact transfers
 // TODO: standardise hash function in Circom vs Noir
-// TODO: add event is zero check
 fn process_events(
     froms: [Field],
     tos: [Field],
