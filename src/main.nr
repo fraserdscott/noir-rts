@@ -28,10 +28,13 @@ fn simulate_rts(selected : [Field; nTicks], newGoalsX : [Field; nTicks], newGoal
 
     for i in 0..nTicks {
         for j in 0..nEntities {
+            // If the player has selected this entity, update its goal position
             if selected[i] == j {
                 xGoals[j] = newGoalsX[i];
                 yGoals[j] = newGoalsY[j];
             }
+
+            // Move entity towards its goal position
             let run = xGoals[j] - xs[j];
             let rise = yGoals[j] - ys[j];
             let length = run + rise;
@@ -41,7 +44,7 @@ fn simulate_rts(selected : [Field; nTicks], newGoalsX : [Field; nTicks], newGoal
             xs[j] = unitX * speeds[j];
             ys[j] = unitY * speeds[j];
 
-            // If this entity is alive, damage all entities within `RANGE`
+            // If this entity is alive, damage all _other_ entities within `RANGE`
             for k in 0..nEntities {
                 if (j != k) & (healths[j] != 0) & (manhattan_distance(xs[j], xs[k], ys[j], ys[k]) < ranges[j]) {
                     healths[k] = healths[k] - 1;
