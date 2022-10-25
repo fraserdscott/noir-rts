@@ -70,12 +70,6 @@ fn process_events(
         stateHashes[i] = std::hash::pedersen([tos[i], balances[i]])[0];
     };
 
-    // Hardcoded constraints for testing
-    constrain balances[0] == 10;
-    constrain balances[1] == 2;
-    constrain balances[2] == 10;
-    constrain balances[3] == 7;
-
     [eventHash, merkle_root(stateHashes)]
 }
 
@@ -92,10 +86,10 @@ fn main(
     value1 : Field,
     value2 : Field,
     value3 : Field,
-) {
+) -> pub [Field; 2] {
     let froms = [from0, from1, from2, from3];
     let tos = [to0, to1, to2, to3];
     let values = [value0, value1, value2, value3];
 
-    process_events(froms, tos, values);
+    process_events(froms, tos, values)
 }
