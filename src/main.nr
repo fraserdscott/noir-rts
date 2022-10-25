@@ -15,14 +15,18 @@ fn manhattan_distance(x1: Field, x2: Field, y1: Field, y2: Field) -> Field {
 // - the player sets a new goal position for exactly one entity.
 //
 // Movement based on https://gamedev.stackexchange.com/questions/50978/moving-a-sprite-towards-an-x-and-y-coordinate
-fn simulate_rts(selected : [Field; nTicks], newGoalsX : [Field; nTicks], newGoalsY : [Field; nTicks]) {
-    
+fn simulate_rts(
+    factions : [Field; nEntities],
+    initialHealths : [Field; nEntities],
+    ranges : [Field; nEntities],
+    speeds : [Field; nEntities],
+    selected : [Field; nTicks], 
+    newGoalsX : [Field; nTicks], 
+    newGoalsY : [Field; nTicks],
+    ) {
+
     // Entity traits
-    let factions : [Field; nEntities] = [0; 10];
-    let initialHealths : [Field; nEntities] = [200; 10];
-    let ranges : [Field; nEntities] = [12; 10];
-    let speeds : [Field; nEntities] = [5; 10];
-    let mut healths : [Field; nEntities] = [100; 10];
+    let mut healths : [Field; nEntities] = [0; 10];
     let mut xs : [Field; nEntities] = [0; 10];
     let mut ys : [Field; nEntities] = [0; 10];
     let mut xGoals : [Field; nEntities] = [1; 10];
@@ -60,11 +64,18 @@ fn simulate_rts(selected : [Field; nTicks], newGoalsX : [Field; nTicks], newGoal
     };
 }
 
+// TODO: add collidable geometry to map
 fn main() {
+    // The match configuration; immutable entity traits
+    let factions : [Field; nEntities] = [0; 10];
+    let initialHealths : [Field; nEntities] = [200; 10];
+    let ranges : [Field; nEntities] = [12; 10];
+    let speeds : [Field; nEntities] = [5; 10];
+
     // Default values to mimic player input
     let selected : [Field; nTicks] = [0; 100];
     let newGoalsX : [Field; nTicks] = [9999; 100];
     let newGoalsY : [Field; nTicks] = [9999; 100];
 
-    simulate_rts(selected, newGoalsX, newGoalsY);
+    simulate_rts(factions, initialHealths, ranges, speeds, selected, newGoalsX, newGoalsY);
 }
