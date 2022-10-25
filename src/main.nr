@@ -32,7 +32,7 @@ fn process_events(
     froms: [Field],
     tos: [Field],
     values: [Field],
-) -> [Field ; 2] {
+) -> [Field; 2] {
     let mut balances : [Field; N] = [0, 0, 0, 0];
 
     for i in 0..N {
@@ -77,22 +77,9 @@ fn process_events(
 }
 
 fn main(
-    from0 : Field, 
-    from1 : Field,
-    from2 : Field,
-    from3 : Field,
-    to0 : Field, 
-    to1 : Field,
-    to2 : Field,
-    to3 : Field,
-    value0 : Field, 
-    value1 : Field,
-    value2 : Field,
-    value3 : Field,
+    froms : [Field; N], 
+    tos : [Field; N], 
+    values : [Field; N], 
 ) -> pub [Field; 2] {
-    let froms = [from0, from1, from2, from3];
-    let tos = [to0, to1, to2, to3];
-    let values = [value0, value1, value2, value3];
-
     process_events(froms, tos, values)
 }
