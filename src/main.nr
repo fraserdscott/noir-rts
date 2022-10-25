@@ -12,7 +12,7 @@ fn manhattan_distance(x1: Field, x2: Field, y1: Field, y2: Field) -> Field {
 // An RTS game, written completely in Noir. 
 // Each tick: 
 // - entities move towards their respective "goal" position, at a rate of `SPEED`.
-// - entities with nonzero health (ie. is alive), damage every other entity within `RANGE` of them.
+// - entities with nonzero health (ie. alive), damage every other entity within `RANGE` of them.
 // - a new goal position is set for a exactly one entity (simulating player input).
 //
 // Movement based on https://gamedev.stackexchange.com/questions/50978/moving-a-sprite-towards-an-x-and-y-coordinate
