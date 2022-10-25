@@ -29,6 +29,7 @@ fn merkle_root(leaves: [Field]) -> Field {
 
 // TODO: add inexact transfers
 // TODO: standardise hash function in Circom vs Noir
+// TODO: add event is zero check
 fn process_events(
     froms: [Field],
     tos: [Field],
@@ -66,7 +67,11 @@ fn process_events(
     let mut stateHashes : [Field; N] = [0, 0, 0, 0];
 
     for i in 0..N {
-        eventHash = std::hash::pedersen([eventHash, froms[i], tos[i], values[i]])[0];
+        // If both accounts are zero, these are just default signals; we have processed all events
+        if (froms[i] != 0) | (tos[i] != 0) {
+            eventHash = std::hash::pedersen([eventHash, froms[i], tos[i], values[i]])[0];
+        }
+
         stateHashes[i] = std::hash::pedersen([tos[i], balances[i]])[0];
     };
 
