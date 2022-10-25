@@ -11,19 +11,26 @@ fn manhattan_distance(x1: Field, x2: Field, y1: Field, y2: Field) -> Field {
 // An RTS game, written completely in Noir. 
 // Each tick: 
 // - entities move towards their respective "goal" position, at a rate of `SPEED`.
-// - entities with nonzero health (ie. alive), damage every other entity within `RANGE` of them.
+// - entities with nonzero health (ie. alive), damage every entity that is not in their faction and within `RANGE` of them.
 // - the player sets a new goal position for exactly one entity.
 //
 // Movement based on https://gamedev.stackexchange.com/questions/50978/moving-a-sprite-towards-an-x-and-y-coordinate
 fn simulate_rts(selected : [Field; nTicks], newGoalsX : [Field; nTicks], newGoalsY : [Field; nTicks]) {
+    
     // Entity traits
-    let speeds : [Field; nEntities] = [5; 10];
+    let factions : [Field; nEntities] = [0; 10];
+    let initialHealths : [Field; nEntities] = [200; 10];
     let ranges : [Field; nEntities] = [12; 10];
-    let mut healths : [Field; nEntities] = [0; 10];
+    let speeds : [Field; nEntities] = [5; 10];
+    let mut healths : [Field; nEntities] = [100; 10];
     let mut xs : [Field; nEntities] = [0; 10];
     let mut ys : [Field; nEntities] = [0; 10];
     let mut xGoals : [Field; nEntities] = [1; 10];
     let mut yGoals : [Field; nEntities] = [1; 10];
+
+    for i in 0..nEntities {
+        healths[i] = initialHealths[i];
+    };
 
     for i in 0..nTicks {
         for j in 0..nEntities {
@@ -43,9 +50,9 @@ fn simulate_rts(selected : [Field; nTicks], newGoalsX : [Field; nTicks], newGoal
             xs[j] = unitX * speeds[j];
             ys[j] = unitY * speeds[j];
 
-            // If this entity is alive, damage all other entities within `RANGE`
+            // If this entity is alive, damage all enemy entities within `RANGE`
             for k in 0..nEntities {
-                if (j != k) & (healths[j] != 0) & (manhattan_distance(xs[j], xs[k], ys[j], ys[k]) < ranges[j]) {
+                if (healths[j] != 0) & (factions[j] != factions[k]) & (manhattan_distance(xs[j], xs[k], ys[j], ys[k]) < ranges[j]) {
                     healths[k] = healths[k] - 1;
                 }
             }
