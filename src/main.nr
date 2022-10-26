@@ -58,8 +58,8 @@ fn simulate_rts(
             // This program fails with division by zero. tf?!
             // According to the docs, equality with a constant is not supported, but the program doesn't fail.
             if length != 0 {
-                let unitX = run / length;
-                let unitY = rise / length;
+                let unitX = run / (length + 1);
+                let unitY = rise / (length + 1);
                 let newX = unitX * speeds[j];
                 let newY = unitY * speeds[j];
 
