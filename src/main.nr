@@ -10,10 +10,6 @@ fn manhattan_distance(x1: Field, x2: Field, y1: Field, y2: Field) -> Field {
     (x1 - x2) + (y1 - y2)
 }
 
-
-// TODO: make shooting more intelligent. 5 tick reload, only shoot nearest enemy
-
-
 // An RTS game, written completely in Noir. 
 // Each tick: 
 // - entities move towards their respective "goal" position, at a rate of `SPEED`.
