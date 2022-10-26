@@ -55,8 +55,6 @@ fn simulate_rts(
             let rise = yGoals[j] - ys[j];
             let length = run + rise;
 
-            // This program fails with division by zero. tf?!
-            // According to the docs, equality with a constant is not supported, but the program doesn't fail.
             if length != 0 {
                 let unitX = run / (length + 1);
                 let unitY = rise / (length + 1);
