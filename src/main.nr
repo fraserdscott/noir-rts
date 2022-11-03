@@ -1,5 +1,6 @@
 use dep::std;
 
+const nEvents: Field = 3;
 const nFactions: Field = 2;
 const nUnits: Field = 10;
 const nTicks: Field = 10;
@@ -47,9 +48,10 @@ fn simulate_rts(
     initialHealths : [Field; nUnits], // The initial health of each unit
     ranges : [Field; nUnits], // The attack range of each unit
     speeds : [Field; nUnits], // The movement speed of each unit
-    selected : [Field; nTicks], // The selected unit per tick
-    newGoalsX : [Field; nTicks], // The goal x of the selected unit per tick
-    newGoalsY : [Field; nTicks], // The goal y of the selected unit per tick
+    ticks : [Field; nEvents], // The tick per event
+    selected : [Field; nEvents], // The selected unit per event
+    newGoalsX : [Field; nEvents], // The goal x of the selected unit per event
+    newGoalsY : [Field; nEvents], // The goal y of the selected unit per event
     ) -> [Field; 2] {
 
     // Mutable unit traits
@@ -66,13 +68,19 @@ fn simulate_rts(
     };
 
     for i in 0..nTicks {
-        for j in 0..nUnits {
-            // If the player has selected this unit, update its goal position
-            if selected[i] == j {
-                xGoals[j] = newGoalsX[i];
-                yGoals[j] = newGoalsY[j];
+        // First, process any events
+        for j in 0..nEvents {
+            for k in 0..nUnits {
+                // If this event took place in this tick and the player selected this unit, update its goal position
+                if (ticks[j] == i) & (selected[j] == k) {
+                    xGoals[k] = newGoalsX[j];
+                    yGoals[k] = newGoalsY[j];
+                }
             }
-            
+        };
+
+        // Then, process unit ticking
+        for j in 0..nUnits {
             // Calculate move towards its goal position
             let run = xGoals[j] - xs[j];
             let rise = yGoals[j] - ys[j];
@@ -113,17 +121,18 @@ fn simulate_rts(
     };
 
     let mut eventHash : Field = 0;
-    for i in 0..nTicks {
-        eventHash = std::hash::pedersen([eventHash, selected[i], newGoalsX[i], newGoalsY[i]])[0];
+    for i in 0..nEvents {
+        eventHash = std::hash::pedersen([eventHash, ticks[i], selected[i], newGoalsX[i], newGoalsY[i]])[0];
     };
 
     [eventHash, find_max_index(points)]
 }
 
 fn setup_and_sim(
-    selected : [Field; nTicks], 
-    newGoalsX : [Field; nTicks], 
-    newGoalsY : [Field; nTicks]
+    ticks : [Field; nEvents],
+    selected : [Field; nEvents], 
+    newGoalsX : [Field; nEvents], 
+    newGoalsY : [Field; nEvents]
     ) -> [Field; 2] {
 
     // The match configuration; immutable unit traits
@@ -139,14 +148,15 @@ fn setup_and_sim(
         initialXs[i] = i * 100;
     };
 
-    simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, selected, newGoalsX, newGoalsY)
+    simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, ticks,selected, newGoalsX, newGoalsY)
 }
 
-fn main(selected : pub [Field; nTicks]) -> pub Field {
+fn main(selected : pub [Field; nEvents]) -> pub Field {
     // Default values to mimic player input
-    let newGoalsX : [Field; nTicks] = [0; 10];
-    let newGoalsY : [Field; nTicks] = [0; 10];
+    let ticks : [Field; nEvents] = [0; 3];
+    let newGoalsX : [Field; nEvents] = [0; 3];
+    let newGoalsY : [Field; nEvents] = [0; 3];
 
     // For now only return the winner
-    setup_and_sim(selected, newGoalsX, newGoalsY)[1]
+    setup_and_sim(ticks, selected, newGoalsX, newGoalsY)[1]
 }
