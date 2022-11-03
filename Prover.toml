@@ -1,3 +1,4 @@
-
+eventFactions=[0,1,2]
+ticks=[0,1,2]
 selected=[0,1,2]
 return=0

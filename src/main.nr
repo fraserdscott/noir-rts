@@ -42,16 +42,17 @@ fn find_max_index(l: [Field]) -> Field {
 //
 // Movement based on https://gamedev.stackexchange.com/questions/50978/moving-a-sprite-towards-an-x-and-y-coordinate
 fn simulate_rts(
-    factions : [Field; nUnits], // The faction of each unit
-    initialXs : [Field; nUnits], // The starting x for each unit
-    initialYs : [Field; nUnits], // The starting y for each unit
-    initialHealths : [Field; nUnits], // The initial health of each unit
-    ranges : [Field; nUnits], // The attack range of each unit
-    speeds : [Field; nUnits], // The movement speed of each unit
-    ticks : [Field; nEvents], // The tick per event
-    selected : [Field; nEvents], // The selected unit per event
-    newGoalsX : [Field; nEvents], // The goal x of the selected unit per event
-    newGoalsY : [Field; nEvents], // The goal y of the selected unit per event
+    factions : [Field; nUnits],         // The faction of each unit
+    initialXs : [Field; nUnits],        // The starting x for each unit
+    initialYs : [Field; nUnits],        // The starting y for each unit
+    initialHealths : [Field; nUnits],   // The initial health of each unit
+    ranges : [Field; nUnits],           // The attack range of each unit
+    speeds : [Field; nUnits],           // The movement speed of each unit
+    eventFactions : [Field; nEvents],   // The faction of each event
+    eventTicks : [Field; nEvents],      // The tick of each event
+    selected : [Field; nEvents],        // The selected unit of each event
+    newGoalsX : [Field; nEvents],       // The goal x of the selected unit of each event
+    newGoalsY : [Field; nEvents],       // The goal y of the selected unit of each event
     ) -> [Field; 2] {
 
     // Mutable unit traits
@@ -71,8 +72,8 @@ fn simulate_rts(
         // First, process any events
         for j in 0..nEvents {
             for k in 0..nUnits {
-                // If this event took place in this tick and the player selected this unit, update its goal position
-                if (ticks[j] == i) & (selected[j] == k) {
+                // If this event took place in this tick and the player owns this unit and selected this unit, update its goal position
+                if (eventTicks[j] == i) & (eventFactions[j] == factions[k]) & (selected[j] == k) {
                     xGoals[k] = newGoalsX[j];
                     yGoals[k] = newGoalsY[j];
                 }
@@ -120,15 +121,16 @@ fn simulate_rts(
         points[faction] = points[faction] + healths[i];
     };
 
-    let mut eventHash : Field = 0;
+    let mut eventHash = 0;
     for i in 0..nEvents {
-        eventHash = std::hash::pedersen([eventHash, ticks[i], selected[i], newGoalsX[i], newGoalsY[i]])[0];
+        eventHash = std::hash::pedersen([eventHash, eventFactions[i], eventTicks[i], selected[i], newGoalsX[i], newGoalsY[i]])[0];
     };
 
     [eventHash, find_max_index(points)]
 }
 
 fn setup_and_sim(
+    eventFactions : [Field; nEvents],
     ticks : [Field; nEvents],
     selected : [Field; nEvents], 
     newGoalsX : [Field; nEvents], 
@@ -148,15 +150,14 @@ fn setup_and_sim(
         initialXs[i] = i * 100;
     };
 
-    simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, ticks,selected, newGoalsX, newGoalsY)
+    simulate_rts(factions, initialXs, initialYs, initialHealths, ranges, speeds, eventFactions, ticks, selected, newGoalsX, newGoalsY)
 }
 
-fn main(selected : pub [Field; nEvents]) -> pub Field {
+fn main(eventFactions : [Field; nEvents], ticks : [Field; nEvents], selected : [Field; nEvents]) -> pub Field {
     // Default values to mimic player input
-    let ticks : [Field; nEvents] = [0; 3];
     let newGoalsX : [Field; nEvents] = [0; 3];
     let newGoalsY : [Field; nEvents] = [0; 3];
 
     // For now only return the winner
-    setup_and_sim(ticks, selected, newGoalsX, newGoalsY)[1]
+    setup_and_sim(eventFactions, ticks, selected, newGoalsX, newGoalsY)[1]
 }
